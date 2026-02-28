@@ -433,17 +433,17 @@ class ProtoRecurrenceRule extends $pb.GeneratedMessage {
 
 class ProtoTask extends $pb.GeneratedMessage {
   factory ProtoTask({
-    $core.String? id,
+    $core.List<$core.int>? id,
     $core.String? title,
     $core.String? notes,
     $core.bool? isCompleted,
     $fixnum.Int64? createdAtMs,
     $fixnum.Int64? scheduledDateMs,
     ProtoRecurrenceRule? recurrence,
-    $core.Iterable<$core.String>? tagIds,
-    $core.String? listId,
-    $core.String? previousTaskId,
-    $core.String? nextTaskId,
+    $core.Iterable<$core.List<$core.int>>? tagIds,
+    $core.List<$core.int>? listId,
+    $core.List<$core.int>? previousTaskId,
+    $core.List<$core.int>? nextTaskId,
     $core.Iterable<$fixnum.Int64>? completedDatesMs,
   }) {
     final result = create();
@@ -476,7 +476,8 @@ class ProtoTask extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoTask',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..a<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.OY)
     ..aOS(2, _omitFieldNames ? '' : 'title')
     ..aOS(3, _omitFieldNames ? '' : 'notes')
     ..aOB(4, _omitFieldNames ? '' : 'isCompleted')
@@ -484,10 +485,14 @@ class ProtoTask extends $pb.GeneratedMessage {
     ..aInt64(6, _omitFieldNames ? '' : 'scheduledDateMs')
     ..aOM<ProtoRecurrenceRule>(7, _omitFieldNames ? '' : 'recurrence',
         subBuilder: ProtoRecurrenceRule.create)
-    ..pPS(8, _omitFieldNames ? '' : 'tagIds')
-    ..aOS(9, _omitFieldNames ? '' : 'listId')
-    ..aOS(10, _omitFieldNames ? '' : 'previousTaskId')
-    ..aOS(11, _omitFieldNames ? '' : 'nextTaskId')
+    ..p<$core.List<$core.int>>(
+        8, _omitFieldNames ? '' : 'tagIds', $pb.PbFieldType.PY)
+    ..a<$core.List<$core.int>>(
+        9, _omitFieldNames ? '' : 'listId', $pb.PbFieldType.OY)
+    ..a<$core.List<$core.int>>(
+        10, _omitFieldNames ? '' : 'previousTaskId', $pb.PbFieldType.OY)
+    ..a<$core.List<$core.int>>(
+        11, _omitFieldNames ? '' : 'nextTaskId', $pb.PbFieldType.OY)
     ..p<$fixnum.Int64>(
         12, _omitFieldNames ? '' : 'completedDatesMs', $pb.PbFieldType.K6)
     ..hasRequiredFields = false;
@@ -511,9 +516,9 @@ class ProtoTask extends $pb.GeneratedMessage {
   static ProtoTask? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.List<$core.int> get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($core.List<$core.int> value) => $_setBytes(0, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
@@ -577,30 +582,31 @@ class ProtoTask extends $pb.GeneratedMessage {
   ProtoRecurrenceRule ensureRecurrence() => $_ensure(6);
 
   @$pb.TagNumber(8)
-  $pb.PbList<$core.String> get tagIds => $_getList(7);
+  $pb.PbList<$core.List<$core.int>> get tagIds => $_getList(7);
 
   @$pb.TagNumber(9)
-  $core.String get listId => $_getSZ(8);
+  $core.List<$core.int> get listId => $_getN(8);
   @$pb.TagNumber(9)
-  set listId($core.String value) => $_setString(8, value);
+  set listId($core.List<$core.int> value) => $_setBytes(8, value);
   @$pb.TagNumber(9)
   $core.bool hasListId() => $_has(8);
   @$pb.TagNumber(9)
   void clearListId() => $_clearField(9);
 
+  /// empty bytes means "not set"
   @$pb.TagNumber(10)
-  $core.String get previousTaskId => $_getSZ(9);
+  $core.List<$core.int> get previousTaskId => $_getN(9);
   @$pb.TagNumber(10)
-  set previousTaskId($core.String value) => $_setString(9, value);
+  set previousTaskId($core.List<$core.int> value) => $_setBytes(9, value);
   @$pb.TagNumber(10)
   $core.bool hasPreviousTaskId() => $_has(9);
   @$pb.TagNumber(10)
   void clearPreviousTaskId() => $_clearField(10);
 
   @$pb.TagNumber(11)
-  $core.String get nextTaskId => $_getSZ(10);
+  $core.List<$core.int> get nextTaskId => $_getN(10);
   @$pb.TagNumber(11)
-  set nextTaskId($core.String value) => $_setString(10, value);
+  set nextTaskId($core.List<$core.int> value) => $_setBytes(10, value);
   @$pb.TagNumber(11)
   $core.bool hasNextTaskId() => $_has(10);
   @$pb.TagNumber(11)
@@ -612,11 +618,11 @@ class ProtoTask extends $pb.GeneratedMessage {
 
 class ProtoTaskList extends $pb.GeneratedMessage {
   factory ProtoTaskList({
-    $core.String? id,
+    $core.List<$core.int>? id,
     $core.String? name,
     $core.bool? hasColor,
     $core.int? colorValue,
-    $core.String? folderId,
+    $core.List<$core.int>? folderId,
     $core.int? order,
   }) {
     final result = create();
@@ -642,11 +648,13 @@ class ProtoTaskList extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoTaskList',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..a<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.OY)
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..aOB(3, _omitFieldNames ? '' : 'hasColor')
     ..aI(4, _omitFieldNames ? '' : 'colorValue')
-    ..aOS(5, _omitFieldNames ? '' : 'folderId')
+    ..a<$core.List<$core.int>>(
+        5, _omitFieldNames ? '' : 'folderId', $pb.PbFieldType.OY)
     ..aI(6, _omitFieldNames ? '' : 'order')
     ..hasRequiredFields = false;
 
@@ -670,9 +678,9 @@ class ProtoTaskList extends $pb.GeneratedMessage {
   static ProtoTaskList? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.List<$core.int> get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($core.List<$core.int> value) => $_setBytes(0, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
@@ -706,10 +714,11 @@ class ProtoTaskList extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearColorValue() => $_clearField(4);
 
+  /// empty bytes means "not set"
   @$pb.TagNumber(5)
-  $core.String get folderId => $_getSZ(4);
+  $core.List<$core.int> get folderId => $_getN(4);
   @$pb.TagNumber(5)
-  set folderId($core.String value) => $_setString(4, value);
+  set folderId($core.List<$core.int> value) => $_setBytes(4, value);
   @$pb.TagNumber(5)
   $core.bool hasFolderId() => $_has(4);
   @$pb.TagNumber(5)
@@ -727,7 +736,7 @@ class ProtoTaskList extends $pb.GeneratedMessage {
 
 class ProtoFolder extends $pb.GeneratedMessage {
   factory ProtoFolder({
-    $core.String? id,
+    $core.List<$core.int>? id,
     $core.String? name,
     $core.int? order,
   }) {
@@ -751,7 +760,8 @@ class ProtoFolder extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoFolder',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..a<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.OY)
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..aI(3, _omitFieldNames ? '' : 'order')
     ..hasRequiredFields = false;
@@ -776,9 +786,9 @@ class ProtoFolder extends $pb.GeneratedMessage {
   static ProtoFolder? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.List<$core.int> get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($core.List<$core.int> value) => $_setBytes(0, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
@@ -805,7 +815,7 @@ class ProtoFolder extends $pb.GeneratedMessage {
 
 class ProtoTag extends $pb.GeneratedMessage {
   factory ProtoTag({
-    $core.String? id,
+    $core.List<$core.int>? id,
     $core.String? name,
     $core.int? colorValue,
   }) {
@@ -829,7 +839,8 @@ class ProtoTag extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoTag',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..a<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.OY)
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..aI(3, _omitFieldNames ? '' : 'colorValue')
     ..hasRequiredFields = false;
@@ -853,9 +864,9 @@ class ProtoTag extends $pb.GeneratedMessage {
   static ProtoTag? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.List<$core.int> get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($core.List<$core.int> value) => $_setBytes(0, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
@@ -1200,7 +1211,7 @@ class ProtoDateRangeFilter extends $pb.GeneratedMessage {
 
 class ProtoTagsFilter extends $pb.GeneratedMessage {
   factory ProtoTagsFilter({
-    $core.Iterable<$core.String>? tagIds,
+    $core.Iterable<$core.List<$core.int>>? tagIds,
   }) {
     final result = create();
     if (tagIds != null) result.tagIds.addAll(tagIds);
@@ -1220,7 +1231,8 @@ class ProtoTagsFilter extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoTagsFilter',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..pPS(1, _omitFieldNames ? '' : 'tagIds')
+    ..p<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'tagIds', $pb.PbFieldType.PY)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1243,7 +1255,7 @@ class ProtoTagsFilter extends $pb.GeneratedMessage {
   static ProtoTagsFilter? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $pb.PbList<$core.String> get tagIds => $_getList(0);
+  $pb.PbList<$core.List<$core.int>> get tagIds => $_getList(0);
 }
 
 enum ProtoSmartListFilter_Filter {
@@ -1455,7 +1467,7 @@ class ProtoSmartListFilter extends $pb.GeneratedMessage {
 
 class ProtoSmartList extends $pb.GeneratedMessage {
   factory ProtoSmartList({
-    $core.String? id,
+    $core.List<$core.int>? id,
     $core.String? name,
     $core.int? iconCodePoint,
     $core.int? colorValue,
@@ -1483,7 +1495,8 @@ class ProtoSmartList extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoSmartList',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..a<$core.List<$core.int>>(
+        1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.OY)
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..aI(3, _omitFieldNames ? '' : 'iconCodePoint')
     ..aI(4, _omitFieldNames ? '' : 'colorValue')
@@ -1511,9 +1524,9 @@ class ProtoSmartList extends $pb.GeneratedMessage {
   static ProtoSmartList? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $core.List<$core.int> get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($core.List<$core.int> value) => $_setBytes(0, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)

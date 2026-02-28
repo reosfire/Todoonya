@@ -6,7 +6,6 @@ builders:
       "proto/{{}}.proto":
         - "lib/proto/{{}}.pb.dart"
         - "lib/proto/{{}}.pbenum.dart"
-        - "lib/proto/{{}}.pbserver.dart"
         - "lib/proto/{{}}.pbjson.dart"
     auto_apply: root_package
     build_to: source

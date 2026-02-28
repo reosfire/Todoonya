@@ -147,7 +147,7 @@ final $typed_data.Uint8List protoRecurrenceRuleDescriptor = $convert.base64Decod
 const ProtoTask$json = {
   '1': 'ProtoTask',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'id', '3': 1, '4': 1, '5': 12, '10': 'id'},
     {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
     {'1': 'notes', '3': 3, '4': 1, '5': 9, '10': 'notes'},
     {'1': 'is_completed', '3': 4, '4': 1, '5': 8, '10': 'isCompleted'},
@@ -161,10 +161,10 @@ const ProtoTask$json = {
       '6': '.todo.ProtoRecurrenceRule',
       '10': 'recurrence'
     },
-    {'1': 'tag_ids', '3': 8, '4': 3, '5': 9, '10': 'tagIds'},
-    {'1': 'list_id', '3': 9, '4': 1, '5': 9, '10': 'listId'},
-    {'1': 'previous_task_id', '3': 10, '4': 1, '5': 9, '10': 'previousTaskId'},
-    {'1': 'next_task_id', '3': 11, '4': 1, '5': 9, '10': 'nextTaskId'},
+    {'1': 'tag_ids', '3': 8, '4': 3, '5': 12, '10': 'tagIds'},
+    {'1': 'list_id', '3': 9, '4': 1, '5': 12, '10': 'listId'},
+    {'1': 'previous_task_id', '3': 10, '4': 1, '5': 12, '10': 'previousTaskId'},
+    {'1': 'next_task_id', '3': 11, '4': 1, '5': 12, '10': 'nextTaskId'},
     {
       '1': 'completed_dates_ms',
       '3': 12,
@@ -177,39 +177,39 @@ const ProtoTask$json = {
 
 /// Descriptor for `ProtoTask`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoTaskDescriptor = $convert.base64Decode(
-    'CglQcm90b1Rhc2sSDgoCaWQYASABKAlSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIUCgVub3'
+    'CglQcm90b1Rhc2sSDgoCaWQYASABKAxSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIUCgVub3'
     'RlcxgDIAEoCVIFbm90ZXMSIQoMaXNfY29tcGxldGVkGAQgASgIUgtpc0NvbXBsZXRlZBIiCg1j'
     'cmVhdGVkX2F0X21zGAUgASgDUgtjcmVhdGVkQXRNcxIqChFzY2hlZHVsZWRfZGF0ZV9tcxgGIA'
     'EoA1IPc2NoZWR1bGVkRGF0ZU1zEjkKCnJlY3VycmVuY2UYByABKAsyGS50b2RvLlByb3RvUmVj'
-    'dXJyZW5jZVJ1bGVSCnJlY3VycmVuY2USFwoHdGFnX2lkcxgIIAMoCVIGdGFnSWRzEhcKB2xpc3'
-    'RfaWQYCSABKAlSBmxpc3RJZBIoChBwcmV2aW91c190YXNrX2lkGAogASgJUg5wcmV2aW91c1Rh'
-    'c2tJZBIgCgxuZXh0X3Rhc2tfaWQYCyABKAlSCm5leHRUYXNrSWQSLAoSY29tcGxldGVkX2RhdG'
+    'dXJyZW5jZVJ1bGVSCnJlY3VycmVuY2USFwoHdGFnX2lkcxgIIAMoDFIGdGFnSWRzEhcKB2xpc3'
+    'RfaWQYCSABKAxSBmxpc3RJZBIoChBwcmV2aW91c190YXNrX2lkGAogASgMUg5wcmV2aW91c1Rh'
+    'c2tJZBIgCgxuZXh0X3Rhc2tfaWQYCyABKAxSCm5leHRUYXNrSWQSLAoSY29tcGxldGVkX2RhdG'
     'VzX21zGAwgAygDUhBjb21wbGV0ZWREYXRlc01z');
 
 @$core.Deprecated('Use protoTaskListDescriptor instead')
 const ProtoTaskList$json = {
   '1': 'ProtoTaskList',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'id', '3': 1, '4': 1, '5': 12, '10': 'id'},
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'has_color', '3': 3, '4': 1, '5': 8, '10': 'hasColor'},
     {'1': 'color_value', '3': 4, '4': 1, '5': 5, '10': 'colorValue'},
-    {'1': 'folder_id', '3': 5, '4': 1, '5': 9, '10': 'folderId'},
+    {'1': 'folder_id', '3': 5, '4': 1, '5': 12, '10': 'folderId'},
     {'1': 'order', '3': 6, '4': 1, '5': 5, '10': 'order'},
   ],
 };
 
 /// Descriptor for `ProtoTaskList`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoTaskListDescriptor = $convert.base64Decode(
-    'Cg1Qcm90b1Rhc2tMaXN0Eg4KAmlkGAEgASgJUgJpZBISCgRuYW1lGAIgASgJUgRuYW1lEhsKCW'
+    'Cg1Qcm90b1Rhc2tMaXN0Eg4KAmlkGAEgASgMUgJpZBISCgRuYW1lGAIgASgJUgRuYW1lEhsKCW'
     'hhc19jb2xvchgDIAEoCFIIaGFzQ29sb3ISHwoLY29sb3JfdmFsdWUYBCABKAVSCmNvbG9yVmFs'
-    'dWUSGwoJZm9sZGVyX2lkGAUgASgJUghmb2xkZXJJZBIUCgVvcmRlchgGIAEoBVIFb3JkZXI=');
+    'dWUSGwoJZm9sZGVyX2lkGAUgASgMUghmb2xkZXJJZBIUCgVvcmRlchgGIAEoBVIFb3JkZXI=');
 
 @$core.Deprecated('Use protoFolderDescriptor instead')
 const ProtoFolder$json = {
   '1': 'ProtoFolder',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'id', '3': 1, '4': 1, '5': 12, '10': 'id'},
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'order', '3': 3, '4': 1, '5': 5, '10': 'order'},
   ],
@@ -217,14 +217,14 @@ const ProtoFolder$json = {
 
 /// Descriptor for `ProtoFolder`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoFolderDescriptor = $convert.base64Decode(
-    'CgtQcm90b0ZvbGRlchIOCgJpZBgBIAEoCVICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRIUCgVvcm'
+    'CgtQcm90b0ZvbGRlchIOCgJpZBgBIAEoDFICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRIUCgVvcm'
     'RlchgDIAEoBVIFb3JkZXI=');
 
 @$core.Deprecated('Use protoTagDescriptor instead')
 const ProtoTag$json = {
   '1': 'ProtoTag',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'id', '3': 1, '4': 1, '5': 12, '10': 'id'},
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'color_value', '3': 3, '4': 1, '5': 5, '10': 'colorValue'},
   ],
@@ -232,7 +232,7 @@ const ProtoTag$json = {
 
 /// Descriptor for `ProtoTag`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoTagDescriptor = $convert.base64Decode(
-    'CghQcm90b1RhZxIOCgJpZBgBIAEoCVICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRIfCgtjb2xvcl'
+    'CghQcm90b1RhZxIOCgJpZBgBIAEoDFICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRIfCgtjb2xvcl'
     '92YWx1ZRgDIAEoBVIKY29sb3JWYWx1ZQ==');
 
 @$core.Deprecated('Use protoTodayFilterDescriptor instead')
@@ -310,13 +310,13 @@ final $typed_data.Uint8List protoDateRangeFilterDescriptor = $convert.base64Deco
 const ProtoTagsFilter$json = {
   '1': 'ProtoTagsFilter',
   '2': [
-    {'1': 'tag_ids', '3': 1, '4': 3, '5': 9, '10': 'tagIds'},
+    {'1': 'tag_ids', '3': 1, '4': 3, '5': 12, '10': 'tagIds'},
   ],
 };
 
 /// Descriptor for `ProtoTagsFilter`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoTagsFilterDescriptor = $convert
-    .base64Decode('Cg9Qcm90b1RhZ3NGaWx0ZXISFwoHdGFnX2lkcxgBIAMoCVIGdGFnSWRz');
+    .base64Decode('Cg9Qcm90b1RhZ3NGaWx0ZXISFwoHdGFnX2lkcxgBIAMoDFIGdGFnSWRz');
 
 @$core.Deprecated('Use protoSmartListFilterDescriptor instead')
 const ProtoSmartListFilter$json = {
@@ -416,7 +416,7 @@ final $typed_data.Uint8List protoSmartListFilterDescriptor = $convert.base64Deco
 const ProtoSmartList$json = {
   '1': 'ProtoSmartList',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'id', '3': 1, '4': 1, '5': 12, '10': 'id'},
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'icon_code_point', '3': 3, '4': 1, '5': 5, '10': 'iconCodePoint'},
     {'1': 'color_value', '3': 4, '4': 1, '5': 5, '10': 'colorValue'},
@@ -433,7 +433,7 @@ const ProtoSmartList$json = {
 
 /// Descriptor for `ProtoSmartList`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List protoSmartListDescriptor = $convert.base64Decode(
-    'Cg5Qcm90b1NtYXJ0TGlzdBIOCgJpZBgBIAEoCVICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRImCg'
+    'Cg5Qcm90b1NtYXJ0TGlzdBIOCgJpZBgBIAEoDFICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZRImCg'
     '9pY29uX2NvZGVfcG9pbnQYAyABKAVSDWljb25Db2RlUG9pbnQSHwoLY29sb3JfdmFsdWUYBCAB'
     'KAVSCmNvbG9yVmFsdWUSMgoGZmlsdGVyGAUgASgLMhoudG9kby5Qcm90b1NtYXJ0TGlzdEZpbH'
     'RlclIGZmlsdGVy');

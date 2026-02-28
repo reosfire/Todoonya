@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:fixnum/fixnum.dart';
+import 'package:uuid/uuid.dart';
 import '../models/task.dart';
 import '../models/task_list.dart';
 import '../models/folder.dart';
@@ -19,6 +20,21 @@ class ProtoSerializer {
   static Int64 _toMs(DateTime dt) => Int64(dt.millisecondsSinceEpoch);
   static DateTime _fromMs(Int64 ms) =>
       DateTime.fromMillisecondsSinceEpoch(ms.toInt());
+
+  /// UUID string → 16 raw bytes.
+  static Uint8List _uuidToBytes(String uuid) =>
+      Uint8List.fromList(Uuid.parse(uuid));
+
+  /// 16 raw bytes → UUID string.
+  static String _uuidFromBytes(List<int> bytes) => Uuid.unparse(bytes);
+
+  /// Optional UUID: null → empty bytes, non-null → 16 bytes.
+  static List<int> _optUuidToBytes(String? uuid) =>
+      uuid == null ? const [] : Uint8List.fromList(Uuid.parse(uuid));
+
+  /// Optional UUID: empty bytes → null, 16 bytes → UUID string.
+  static String? _optUuidFromBytes(List<int> bytes) =>
+      bytes.isEmpty ? null : Uuid.unparse(bytes);
 
   // ───── RecurrenceRule ─────
 
@@ -88,7 +104,7 @@ class ProtoSerializer {
         ),
       TagsFilter(:final tagIds) =>
         ProtoSmartListFilter(
-          tags: ProtoTagsFilter(tagIds: tagIds.toList()),
+          tags: ProtoTagsFilter(tagIds: tagIds.map(_uuidToBytes)),
         ),
     };
   }
@@ -106,7 +122,7 @@ class ProtoSerializer {
           dateTo: p.dateRange.hasDateTo ? _fromMs(p.dateRange.dateToMs) : null,
         ),
       ProtoSmartListFilter_Filter.tags =>
-        TagsFilter(tagIds: p.tags.tagIds.toSet()),
+        TagsFilter(tagIds: p.tags.tagIds.map(_uuidFromBytes).toSet()),
       ProtoSmartListFilter_Filter.notSet => const AllTasksFilter(),
     };
   }
@@ -115,17 +131,17 @@ class ProtoSerializer {
 
   static Uint8List taskToBytes(Task t) {
     final p = ProtoTask(
-      id: t.id,
+      id: _uuidToBytes(t.id),
       title: t.title,
       notes: t.notes,
       isCompleted: t.isCompleted,
       createdAtMs: _toMs(t.createdAt),
       scheduledDateMs:
           t.scheduledDate != null ? _toMs(t.scheduledDate!) : Int64.ZERO,
-      tagIds: t.tagIds,
-      listId: t.listId,
-      previousTaskId: t.previousTaskId ?? '',
-      nextTaskId: t.nextTaskId ?? '',
+      tagIds: t.tagIds.map(_uuidToBytes),
+      listId: _uuidToBytes(t.listId),
+      previousTaskId: _optUuidToBytes(t.previousTaskId),
+      nextTaskId: _optUuidToBytes(t.nextTaskId),
       completedDatesMs: t.completedDates.map(_toMs),
     );
     if (t.recurrence != null) p.recurrence = recurrenceToProto(t.recurrence!);
@@ -135,7 +151,7 @@ class ProtoSerializer {
   static Task taskFromBytes(Uint8List bytes) {
     final p = ProtoTask.fromBuffer(bytes);
     return Task(
-      id: p.id,
+      id: _uuidFromBytes(p.id),
       title: p.title,
       notes: p.notes,
       isCompleted: p.isCompleted,
@@ -144,10 +160,10 @@ class ProtoSerializer {
           ? _fromMs(p.scheduledDateMs)
           : null,
       recurrence: p.hasRecurrence() ? recurrenceFromProto(p.recurrence) : null,
-      tagIds: p.tagIds.toSet(),
-      listId: p.listId,
-      previousTaskId: p.previousTaskId.isEmpty ? null : p.previousTaskId,
-      nextTaskId: p.nextTaskId.isEmpty ? null : p.nextTaskId,
+      tagIds: p.tagIds.map(_uuidFromBytes).toSet(),
+      listId: _uuidFromBytes(p.listId),
+      previousTaskId: _optUuidFromBytes(p.previousTaskId),
+      nextTaskId: _optUuidFromBytes(p.nextTaskId),
       completedDates: p.completedDatesMs.map(_fromMs).toSet(),
     );
   }
@@ -156,11 +172,11 @@ class ProtoSerializer {
 
   static Uint8List listToBytes(TaskList l) {
     final p = ProtoTaskList(
-      id: l.id,
+      id: _uuidToBytes(l.id),
       name: l.name,
       hasColor: l.colorValue != null,
       colorValue: l.colorValue ?? 0,
-      folderId: l.folderId ?? '',
+      folderId: _optUuidToBytes(l.folderId),
       order: l.order,
     );
     return Uint8List.fromList(p.writeToBuffer());
@@ -169,10 +185,10 @@ class ProtoSerializer {
   static TaskList listFromBytes(Uint8List bytes) {
     final p = ProtoTaskList.fromBuffer(bytes);
     return TaskList(
-      id: p.id,
+      id: _uuidFromBytes(p.id),
       name: p.name,
       colorValue: p.hasColor ? p.colorValue : null,
-      folderId: p.folderId.isEmpty ? null : p.folderId,
+      folderId: _optUuidFromBytes(p.folderId),
       order: p.order,
     );
   }
@@ -181,27 +197,28 @@ class ProtoSerializer {
 
   static Uint8List folderToBytes(Folder f) {
     return Uint8List.fromList(
-      ProtoFolder(id: f.id, name: f.name, order: f.order).writeToBuffer(),
+      ProtoFolder(id: _uuidToBytes(f.id), name: f.name, order: f.order)
+          .writeToBuffer(),
     );
   }
 
   static Folder folderFromBytes(Uint8List bytes) {
     final p = ProtoFolder.fromBuffer(bytes);
-    return Folder(id: p.id, name: p.name, order: p.order);
+    return Folder(id: _uuidFromBytes(p.id), name: p.name, order: p.order);
   }
 
   // ───── Tag ─────
 
   static Uint8List tagToBytes(Tag t) {
     return Uint8List.fromList(
-      ProtoTag(id: t.id, name: t.name, colorValue: t.colorValue)
+      ProtoTag(id: _uuidToBytes(t.id), name: t.name, colorValue: t.colorValue)
           .writeToBuffer(),
     );
   }
 
   static Tag tagFromBytes(Uint8List bytes) {
     final p = ProtoTag.fromBuffer(bytes);
-    return Tag(id: p.id, name: p.name, colorValue: p.colorValue);
+    return Tag(id: _uuidFromBytes(p.id), name: p.name, colorValue: p.colorValue);
   }
 
   // ───── SmartList ─────
@@ -209,7 +226,7 @@ class ProtoSerializer {
   static Uint8List smartListToBytes(SmartList s) {
     return Uint8List.fromList(
       ProtoSmartList(
-        id: s.id,
+        id: _uuidToBytes(s.id),
         name: s.name,
         iconCodePoint: s.iconCodePoint,
         colorValue: s.colorValue,
@@ -221,7 +238,7 @@ class ProtoSerializer {
   static SmartList smartListFromBytes(Uint8List bytes) {
     final p = ProtoSmartList.fromBuffer(bytes);
     return SmartList(
-      id: p.id,
+      id: _uuidFromBytes(p.id),
       name: p.name,
       iconCodePoint: p.iconCodePoint,
       colorValue: p.colorValue,

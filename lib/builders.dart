@@ -25,7 +25,6 @@ class _ProtoBuilder implements Builder {
     r'proto/{{}}.proto': [
       r'lib/proto/{{}}.pb.dart',
       r'lib/proto/{{}}.pbenum.dart',
-      r'lib/proto/{{}}.pbserver.dart',
       r'lib/proto/{{}}.pbjson.dart',
     ],
   };
@@ -69,15 +68,16 @@ class _ProtoBuilder implements Builder {
         throw Exception('protoc failed:\n${result.stderr}');
       }
 
-      for (final ext in ['.pb.dart', '.pbenum.dart', '.pbserver.dart', '.pbjson.dart']) {
+      for (final ext in ['.pb.dart', '.pbenum.dart', '.pbjson.dart']) {
         final generated = File('${tempDir.path}/$baseName$ext');
         final outputId = AssetId(
           buildStep.inputId.package,
           'lib/proto/$baseName$ext',
         );
-        final content = generated.existsSync()
-            ? generated.readAsStringSync()
-            : '// Generated — empty\n';
+        // .pbserver.dart is only generated when the proto has gRPC services;
+        // skip if the file wasn't produced.
+        if (!generated.existsSync()) continue;
+        final content = generated.readAsStringSync();
         await buildStep.writeAsString(outputId, content);
       }
     } finally {
