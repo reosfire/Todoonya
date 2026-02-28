@@ -1,0 +1,22 @@
+builders:
+  proto:
+    import: "package:todo/builders.dart"
+    builder_factories: ["protoBuilder"]
+    build_extensions:
+      "proto/{{}}.proto":
+        - "lib/proto/{{}}.pb.dart"
+        - "lib/proto/{{}}.pbenum.dart"
+        - "lib/proto/{{}}.pbserver.dart"
+        - "lib/proto/{{}}.pbjson.dart"
+    auto_apply: root_package
+    build_to: source
+    runs_before:
+      - "drift_dev:drift_dev"
+
+# Make build_runner scan the proto/ directory for inputs.
+targets:
+  $default:
+    sources:
+      - proto/**
+      - lib/**
+      - $package$

@@ -234,8 +234,8 @@ class ProtoSerializer {
   static Uint8List syncIndexToBytes(SyncIndex index) {
     return Uint8List.fromList(
       ProtoSyncIndex(
-        entities: index.entities.map((k, v) => MapEntry(k, _toMs(v))),
-        deletions: index.deletions.map((k, v) => MapEntry(k, _toMs(v))),
+        entities: index.entities.entries.map((e) => MapEntry(e.key, _toMs(e.value))),
+        deletions: index.deletions.entries.map((e) => MapEntry(e.key, _toMs(e.value))),
       ).writeToBuffer(),
     );
   }

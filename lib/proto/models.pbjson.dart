@@ -1,13 +1,15 @@
+// This is a generated file - do not edit.
 //
-//  Generated code. Do not modify.
-//  source: models.proto
-//
-// @dart = 2.12
+// Generated from models.proto.
+
+// @dart = 3.3
 
 // ignore_for_file: annotate_overrides, camel_case_types, comment_references
-// ignore_for_file: constant_identifier_names, library_prefixes
-// ignore_for_file: non_constant_identifier_names, prefer_final_fields
-// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: curly_braces_in_flow_control_structures
+// ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_relative_imports
+// ignore_for_file: unused_import
 
 import 'dart:convert' as $convert;
 import 'dart:core' as $core;
@@ -19,8 +21,8 @@ const ProtoDailyRecurrence$json = {
 };
 
 /// Descriptor for `ProtoDailyRecurrence`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoDailyRecurrenceDescriptor = $convert.base64Decode(
-    'ChRQcm90b0RhaWx5UmVjdXJyZW5jZQ==');
+final $typed_data.Uint8List protoDailyRecurrenceDescriptor =
+    $convert.base64Decode('ChRQcm90b0RhaWx5UmVjdXJyZW5jZQ==');
 
 @$core.Deprecated('Use protoEveryNDaysRecurrenceDescriptor instead')
 const ProtoEveryNDaysRecurrence$json = {
@@ -31,9 +33,10 @@ const ProtoEveryNDaysRecurrence$json = {
 };
 
 /// Descriptor for `ProtoEveryNDaysRecurrence`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoEveryNDaysRecurrenceDescriptor = $convert.base64Decode(
-    'ChlQcm90b0V2ZXJ5TkRheXNSZWN1cnJlbmNlEhoKCGludGVydmFsGAEgASgFUghpbnRlcnZhbA'
-    '==');
+final $typed_data.Uint8List protoEveryNDaysRecurrenceDescriptor =
+    $convert.base64Decode(
+        'ChlQcm90b0V2ZXJ5TkRheXNSZWN1cnJlbmNlEhoKCGludGVydmFsGAEgASgFUghpbnRlcnZhbA'
+        '==');
 
 @$core.Deprecated('Use protoWeeklyRecurrenceDescriptor instead')
 const ProtoWeeklyRecurrence$json = {
@@ -44,8 +47,9 @@ const ProtoWeeklyRecurrence$json = {
 };
 
 /// Descriptor for `ProtoWeeklyRecurrence`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoWeeklyRecurrenceDescriptor = $convert.base64Decode(
-    'ChVQcm90b1dlZWtseVJlY3VycmVuY2USGgoId2Vla2RheXMYASADKAVSCHdlZWtkYXlz');
+final $typed_data.Uint8List protoWeeklyRecurrenceDescriptor =
+    $convert.base64Decode(
+        'ChVQcm90b1dlZWtseVJlY3VycmVuY2USGgoId2Vla2RheXMYASADKAVSCHdlZWtkYXlz');
 
 @$core.Deprecated('Use protoMonthlyRecurrenceDescriptor instead')
 const ProtoMonthlyRecurrence$json = {
@@ -56,9 +60,10 @@ const ProtoMonthlyRecurrence$json = {
 };
 
 /// Descriptor for `ProtoMonthlyRecurrence`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoMonthlyRecurrenceDescriptor = $convert.base64Decode(
-    'ChZQcm90b01vbnRobHlSZWN1cnJlbmNlEiAKDGRheV9vZl9tb250aBgBIAEoBVIKZGF5T2ZNb2'
-    '50aA==');
+final $typed_data.Uint8List protoMonthlyRecurrenceDescriptor =
+    $convert.base64Decode(
+        'ChZQcm90b01vbnRobHlSZWN1cnJlbmNlEiAKDGRheV9vZl9tb250aBgBIAEoBVIKZGF5T2ZNb2'
+        '50aA==');
 
 @$core.Deprecated('Use protoYearlyRecurrenceDescriptor instead')
 const ProtoYearlyRecurrence$json = {
@@ -78,11 +83,51 @@ final $typed_data.Uint8List protoYearlyRecurrenceDescriptor = $convert.base64Dec
 const ProtoRecurrenceRule$json = {
   '1': 'ProtoRecurrenceRule',
   '2': [
-    {'1': 'daily', '3': 1, '4': 1, '5': 11, '6': '.todo.ProtoDailyRecurrence', '9': 0, '10': 'daily'},
-    {'1': 'every_n_days', '3': 2, '4': 1, '5': 11, '6': '.todo.ProtoEveryNDaysRecurrence', '9': 0, '10': 'everyNDays'},
-    {'1': 'weekly', '3': 3, '4': 1, '5': 11, '6': '.todo.ProtoWeeklyRecurrence', '9': 0, '10': 'weekly'},
-    {'1': 'monthly', '3': 4, '4': 1, '5': 11, '6': '.todo.ProtoMonthlyRecurrence', '9': 0, '10': 'monthly'},
-    {'1': 'yearly', '3': 5, '4': 1, '5': 11, '6': '.todo.ProtoYearlyRecurrence', '9': 0, '10': 'yearly'},
+    {
+      '1': 'daily',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoDailyRecurrence',
+      '9': 0,
+      '10': 'daily'
+    },
+    {
+      '1': 'every_n_days',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoEveryNDaysRecurrence',
+      '9': 0,
+      '10': 'everyNDays'
+    },
+    {
+      '1': 'weekly',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoWeeklyRecurrence',
+      '9': 0,
+      '10': 'weekly'
+    },
+    {
+      '1': 'monthly',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoMonthlyRecurrence',
+      '9': 0,
+      '10': 'monthly'
+    },
+    {
+      '1': 'yearly',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoYearlyRecurrence',
+      '9': 0,
+      '10': 'yearly'
+    },
   ],
   '8': [
     {'1': 'rule'},
@@ -108,12 +153,25 @@ const ProtoTask$json = {
     {'1': 'is_completed', '3': 4, '4': 1, '5': 8, '10': 'isCompleted'},
     {'1': 'created_at_ms', '3': 5, '4': 1, '5': 3, '10': 'createdAtMs'},
     {'1': 'scheduled_date_ms', '3': 6, '4': 1, '5': 3, '10': 'scheduledDateMs'},
-    {'1': 'recurrence', '3': 7, '4': 1, '5': 11, '6': '.todo.ProtoRecurrenceRule', '10': 'recurrence'},
+    {
+      '1': 'recurrence',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoRecurrenceRule',
+      '10': 'recurrence'
+    },
     {'1': 'tag_ids', '3': 8, '4': 3, '5': 9, '10': 'tagIds'},
     {'1': 'list_id', '3': 9, '4': 1, '5': 9, '10': 'listId'},
     {'1': 'previous_task_id', '3': 10, '4': 1, '5': 9, '10': 'previousTaskId'},
     {'1': 'next_task_id', '3': 11, '4': 1, '5': 9, '10': 'nextTaskId'},
-    {'1': 'completed_dates_ms', '3': 12, '4': 3, '5': 3, '10': 'completedDatesMs'},
+    {
+      '1': 'completed_dates_ms',
+      '3': 12,
+      '4': 3,
+      '5': 3,
+      '10': 'completedDatesMs'
+    },
   ],
 };
 
@@ -183,8 +241,8 @@ const ProtoTodayFilter$json = {
 };
 
 /// Descriptor for `ProtoTodayFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoTodayFilterDescriptor = $convert.base64Decode(
-    'ChBQcm90b1RvZGF5RmlsdGVy');
+final $typed_data.Uint8List protoTodayFilterDescriptor =
+    $convert.base64Decode('ChBQcm90b1RvZGF5RmlsdGVy');
 
 @$core.Deprecated('Use protoTomorrowFilterDescriptor instead')
 const ProtoTomorrowFilter$json = {
@@ -192,8 +250,8 @@ const ProtoTomorrowFilter$json = {
 };
 
 /// Descriptor for `ProtoTomorrowFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoTomorrowFilterDescriptor = $convert.base64Decode(
-    'ChNQcm90b1RvbW9ycm93RmlsdGVy');
+final $typed_data.Uint8List protoTomorrowFilterDescriptor =
+    $convert.base64Decode('ChNQcm90b1RvbW9ycm93RmlsdGVy');
 
 @$core.Deprecated('Use protoUpcomingFilterDescriptor instead')
 const ProtoUpcomingFilter$json = {
@@ -201,8 +259,8 @@ const ProtoUpcomingFilter$json = {
 };
 
 /// Descriptor for `ProtoUpcomingFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoUpcomingFilterDescriptor = $convert.base64Decode(
-    'ChNQcm90b1VwY29taW5nRmlsdGVy');
+final $typed_data.Uint8List protoUpcomingFilterDescriptor =
+    $convert.base64Decode('ChNQcm90b1VwY29taW5nRmlsdGVy');
 
 @$core.Deprecated('Use protoOverdueFilterDescriptor instead')
 const ProtoOverdueFilter$json = {
@@ -210,8 +268,8 @@ const ProtoOverdueFilter$json = {
 };
 
 /// Descriptor for `ProtoOverdueFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoOverdueFilterDescriptor = $convert.base64Decode(
-    'ChJQcm90b092ZXJkdWVGaWx0ZXI=');
+final $typed_data.Uint8List protoOverdueFilterDescriptor =
+    $convert.base64Decode('ChJQcm90b092ZXJkdWVGaWx0ZXI=');
 
 @$core.Deprecated('Use protoCompletedFilterDescriptor instead')
 const ProtoCompletedFilter$json = {
@@ -219,8 +277,8 @@ const ProtoCompletedFilter$json = {
 };
 
 /// Descriptor for `ProtoCompletedFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoCompletedFilterDescriptor = $convert.base64Decode(
-    'ChRQcm90b0NvbXBsZXRlZEZpbHRlcg==');
+final $typed_data.Uint8List protoCompletedFilterDescriptor =
+    $convert.base64Decode('ChRQcm90b0NvbXBsZXRlZEZpbHRlcg==');
 
 @$core.Deprecated('Use protoAllTasksFilterDescriptor instead')
 const ProtoAllTasksFilter$json = {
@@ -228,8 +286,8 @@ const ProtoAllTasksFilter$json = {
 };
 
 /// Descriptor for `ProtoAllTasksFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoAllTasksFilterDescriptor = $convert.base64Decode(
-    'ChNQcm90b0FsbFRhc2tzRmlsdGVy');
+final $typed_data.Uint8List protoAllTasksFilterDescriptor =
+    $convert.base64Decode('ChNQcm90b0FsbFRhc2tzRmlsdGVy');
 
 @$core.Deprecated('Use protoDateRangeFilterDescriptor instead')
 const ProtoDateRangeFilter$json = {
@@ -257,21 +315,85 @@ const ProtoTagsFilter$json = {
 };
 
 /// Descriptor for `ProtoTagsFilter`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoTagsFilterDescriptor = $convert.base64Decode(
-    'Cg9Qcm90b1RhZ3NGaWx0ZXISFwoHdGFnX2lkcxgBIAMoCVIGdGFnSWRz');
+final $typed_data.Uint8List protoTagsFilterDescriptor = $convert
+    .base64Decode('Cg9Qcm90b1RhZ3NGaWx0ZXISFwoHdGFnX2lkcxgBIAMoCVIGdGFnSWRz');
 
 @$core.Deprecated('Use protoSmartListFilterDescriptor instead')
 const ProtoSmartListFilter$json = {
   '1': 'ProtoSmartListFilter',
   '2': [
-    {'1': 'today', '3': 1, '4': 1, '5': 11, '6': '.todo.ProtoTodayFilter', '9': 0, '10': 'today'},
-    {'1': 'tomorrow', '3': 2, '4': 1, '5': 11, '6': '.todo.ProtoTomorrowFilter', '9': 0, '10': 'tomorrow'},
-    {'1': 'upcoming', '3': 3, '4': 1, '5': 11, '6': '.todo.ProtoUpcomingFilter', '9': 0, '10': 'upcoming'},
-    {'1': 'overdue', '3': 4, '4': 1, '5': 11, '6': '.todo.ProtoOverdueFilter', '9': 0, '10': 'overdue'},
-    {'1': 'date_range', '3': 5, '4': 1, '5': 11, '6': '.todo.ProtoDateRangeFilter', '9': 0, '10': 'dateRange'},
-    {'1': 'tags', '3': 6, '4': 1, '5': 11, '6': '.todo.ProtoTagsFilter', '9': 0, '10': 'tags'},
-    {'1': 'completed', '3': 7, '4': 1, '5': 11, '6': '.todo.ProtoCompletedFilter', '9': 0, '10': 'completed'},
-    {'1': 'all', '3': 8, '4': 1, '5': 11, '6': '.todo.ProtoAllTasksFilter', '9': 0, '10': 'all'},
+    {
+      '1': 'today',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoTodayFilter',
+      '9': 0,
+      '10': 'today'
+    },
+    {
+      '1': 'tomorrow',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoTomorrowFilter',
+      '9': 0,
+      '10': 'tomorrow'
+    },
+    {
+      '1': 'upcoming',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoUpcomingFilter',
+      '9': 0,
+      '10': 'upcoming'
+    },
+    {
+      '1': 'overdue',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoOverdueFilter',
+      '9': 0,
+      '10': 'overdue'
+    },
+    {
+      '1': 'date_range',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoDateRangeFilter',
+      '9': 0,
+      '10': 'dateRange'
+    },
+    {
+      '1': 'tags',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoTagsFilter',
+      '9': 0,
+      '10': 'tags'
+    },
+    {
+      '1': 'completed',
+      '3': 7,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoCompletedFilter',
+      '9': 0,
+      '10': 'completed'
+    },
+    {
+      '1': 'all',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoAllTasksFilter',
+      '9': 0,
+      '10': 'all'
+    },
   ],
   '8': [
     {'1': 'filter'},
@@ -298,7 +420,14 @@ const ProtoSmartList$json = {
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {'1': 'icon_code_point', '3': 3, '4': 1, '5': 5, '10': 'iconCodePoint'},
     {'1': 'color_value', '3': 4, '4': 1, '5': 5, '10': 'colorValue'},
-    {'1': 'filter', '3': 5, '4': 1, '5': 11, '6': '.todo.ProtoSmartListFilter', '10': 'filter'},
+    {
+      '1': 'filter',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.todo.ProtoSmartListFilter',
+      '10': 'filter'
+    },
   ],
 };
 
@@ -313,8 +442,22 @@ final $typed_data.Uint8List protoSmartListDescriptor = $convert.base64Decode(
 const ProtoSyncIndex$json = {
   '1': 'ProtoSyncIndex',
   '2': [
-    {'1': 'entities', '3': 1, '4': 3, '5': 11, '6': '.todo.ProtoSyncIndex.EntitiesEntry', '10': 'entities'},
-    {'1': 'deletions', '3': 2, '4': 3, '5': 11, '6': '.todo.ProtoSyncIndex.DeletionsEntry', '10': 'deletions'},
+    {
+      '1': 'entities',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.todo.ProtoSyncIndex.EntitiesEntry',
+      '10': 'entities'
+    },
+    {
+      '1': 'deletions',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.todo.ProtoSyncIndex.DeletionsEntry',
+      '10': 'deletions'
+    },
   ],
   '3': [ProtoSyncIndex_EntitiesEntry$json, ProtoSyncIndex_DeletionsEntry$json],
 };
@@ -346,4 +489,3 @@ final $typed_data.Uint8List protoSyncIndexDescriptor = $convert.base64Decode(
     'b1N5bmNJbmRleC5EZWxldGlvbnNFbnRyeVIJZGVsZXRpb25zGjsKDUVudGl0aWVzRW50cnkSEA'
     'oDa2V5GAEgASgJUgNrZXkSFAoFdmFsdWUYAiABKANSBXZhbHVlOgI4ARo8Cg5EZWxldGlvbnNF'
     'bnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoA1IFdmFsdWU6AjgB');
-
