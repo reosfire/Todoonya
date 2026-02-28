@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/app_state.dart';
+// MIGRATION-IMPORT: remove after migrating personal data.
+import 'migration_import_dialog.dart';
 
 class SyncSettingsPage extends StatelessWidget {
   const SyncSettingsPage({super.key});
@@ -118,6 +120,26 @@ class SyncSettingsPage extends StatelessWidget {
               ),
             ),
           ),
+
+          // ── MIGRATION: remove this card after migrating personal data. ──
+          const SizedBox(height: 24),
+          Card(
+            color: Theme.of(context).colorScheme.errorContainer.withAlpha(80),
+            child: ListTile(
+              leading: const Icon(Icons.upload_file),
+              title: const Text('Import legacy JSON'),
+              subtitle: const Text('One-time migration from the old JSON format'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showDialog<void>(
+                context: context,
+                builder: (_) => MigrationImportDialog(
+                  onImport: (json) =>
+                      context.read<AppState>().migrateFromJson(json),
+                ),
+              ),
+            ),
+          ),
+          // ── END MIGRATION ──
         ],
       ),
     );
