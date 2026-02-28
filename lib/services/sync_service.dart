@@ -1,27 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import '../models/app_data.dart';
 import '../models/sync_index.dart';
-import '../models/task.dart';
-import '../models/task_list.dart';
-import '../models/folder.dart';
-import '../models/tag.dart';
-import '../models/smart_list.dart';
 import 'dropbox_service.dart';
+import 'proto_serializer.dart';
 import 'storage_service.dart';
 
 /// Orchestrates per-entity sync with Dropbox.
 ///
 /// Dropbox layout:
 /// ```
-/// /index.json              – SyncIndex (timestamps + deletions)
-/// /tasks/{id}.json         – individual Task
-/// /lists/{id}.json         – individual TaskList
-/// /folders/{id}.json       – individual Folder
-/// /tags/{id}.json          – individual Tag
-/// /smart_lists/{id}.json   – individual SmartList
+/// /index.bin              – SyncIndex (protobuf binary)
+/// /tasks/{id}.bin         – individual Task
+/// /lists/{id}.bin         – individual TaskList
+/// /folders/{id}.bin       – individual Folder
+/// /tags/{id}.bin          – individual Tag
+/// /smart_lists/{id}.bin   – individual SmartList
 /// ```
 ///
 /// On every local change the affected entity is pushed to Dropbox in the
@@ -37,8 +32,8 @@ class SyncService {
   // ── Batching / queueing ──
 
   /// Buffered changes waiting for the next flush.
-  /// Value is the entity JSON, or `null` for a deletion.
-  final Map<String, Map<String, dynamic>?> _pendingChanges = {};
+  /// Value is the serialised protobuf bytes, or `null` for a deletion.
+  final Map<String, Uint8List?> _pendingChanges = {};
   Timer? _pushTimer;
 
   /// Sequential operation chain so pushes never overlap.
@@ -90,7 +85,7 @@ class SyncService {
   // ───── Auto-push (called on every local change) ─────
 
   /// Schedule an entity upsert to Dropbox.
-  void pushEntity(String type, String id, Map<String, dynamic> json) {
+  void pushEntity(String type, String id, Uint8List bytes) {
     final key = '$type/$id';
     final now = DateTime.now();
     _localIndex.entities[key] = now;
@@ -98,7 +93,7 @@ class SyncService {
     _storage.saveSyncIndex(_localIndex); // fire-and-forget
 
     if (!_dropbox.isSignedIn) return;
-    _pendingChanges[key] = json;
+    _pendingChanges[key] = bytes;
     _schedulePush();
   }
 
@@ -123,7 +118,7 @@ class SyncService {
   void _flushPendingChanges() {
     if (_pendingChanges.isEmpty) return;
 
-    final batch = Map<String, Map<String, dynamic>?>.from(_pendingChanges);
+    final batch = Map<String, Uint8List?>.from(_pendingChanges);
     _pendingChanges.clear();
 
     _enqueue(() async {
@@ -132,13 +127,13 @@ class SyncService {
         await _runParallel(
           batch.entries.map((entry) => () async {
             if (entry.value != null) {
-              await _dropbox.uploadFile(
-                '/${entry.key}.json',
-                jsonEncode(entry.value),
+              await _dropbox.uploadBinaryFile(
+                '/${entry.key}.bin',
+                entry.value!,
               );
             } else {
               try {
-                await _dropbox.deleteFile('/${entry.key}.json');
+                await _dropbox.deleteFile('/${entry.key}.bin');
               } catch (_) {}
             }
           }).toList(),
@@ -202,22 +197,15 @@ class SyncService {
     _clearZipCache();
 
     // 1. Download remote index.
-    final indexContent = await _dropbox.downloadFile('/index.json');
+    final indexBytes = await _dropbox.downloadBinaryFile('/index.bin');
 
-    if (indexContent == null) {
-      // No index yet – check for legacy single-file format.
-      final legacyContent = await _dropbox.downloadFile('/todo_data.json');
-      if (legacyContent != null) {
-        return _migrateFromLegacy(localData, legacyContent);
-      }
-      // Completely fresh remote – upload everything.
+    if (indexBytes == null) {
+      // No index yet – completely fresh remote, upload everything.
       await _uploadAllEntities(localData);
       return localData;
     }
 
-    final remoteIndex = SyncIndex.fromJson(
-      jsonDecode(indexContent) as Map<String, dynamic>,
-    );
+    final remoteIndex = ProtoSerializer.syncIndexFromBytes(indexBytes);
 
     bool localChanged = false;
 
@@ -247,11 +235,10 @@ class SyncService {
     );
     for (var i = 0; i < toDownload.length; i++) {
       final entry = toDownload[i];
-      final content = downloadResults[i];
-      if (content != null) {
+      final bytes = downloadResults[i];
+      if (bytes != null) {
         try {
-          final json = jsonDecode(content) as Map<String, dynamic>;
-          _applyEntityToData(localData, entry.key, json);
+          _applyEntityToData(localData, entry.key, bytes);
           _localIndex.entities[entry.key] = entry.value;
           localChanged = true;
         } catch (e) {
@@ -262,7 +249,7 @@ class SyncService {
 
     // 4. Upload entities that are newer locally (in parallel).
     final toUpload = <MapEntry<String, DateTime>>[];
-    final toUploadJson = <String>[];
+    final toUploadBytes = <Uint8List>[];
     for (final entry in _localIndex.entities.entries) {
       if (_localIndex.deletions.containsKey(entry.key)) continue;
       final remoteDeletion = remoteIndex.deletions[entry.key];
@@ -271,19 +258,19 @@ class SyncService {
       }
       final remoteTime = remoteIndex.entities[entry.key];
       if (remoteTime == null || entry.value.isAfter(remoteTime)) {
-        final json = _extractEntityFromData(localData, entry.key);
-        if (json != null) {
+        final bytes = _extractEntityFromData(localData, entry.key);
+        if (bytes != null) {
           toUpload.add(entry);
-          toUploadJson.add(jsonEncode(json));
+          toUploadBytes.add(bytes);
         }
       }
     }
     await _runParallel(
       List.generate(toUpload.length, (i) => () async {
         try {
-          await _dropbox.uploadFile(
-            '/${toUpload[i].key}.json',
-            toUploadJson[i],
+          await _dropbox.uploadBinaryFile(
+            '/${toUpload[i].key}.bin',
+            toUploadBytes[i],
           );
           remoteIndex.entities[toUpload[i].key] = toUpload[i].value;
           remoteIndex.deletions.remove(toUpload[i].key);
@@ -305,7 +292,7 @@ class SyncService {
     await _runParallel(
       toDelete.map((entry) => () async {
         try {
-          await _dropbox.deleteFile('/${entry.key}.json');
+          await _dropbox.deleteFile('/${entry.key}.bin');
         } catch (_) {}
         remoteIndex.entities.remove(entry.key);
         remoteIndex.deletions[entry.key] = entry.value;
@@ -321,31 +308,6 @@ class SyncService {
       localData.lastModified = DateTime.now();
     }
     return localData;
-  }
-
-  // ───── Legacy migration ─────
-
-  Future<AppData> _migrateFromLegacy(
-    AppData localData,
-    String legacyContent,
-  ) async {
-    try {
-      final legacyData = AppData.fromJson(
-        jsonDecode(legacyContent) as Map<String, dynamic>,
-      );
-      final baseData = legacyData.lastModified.isAfter(localData.lastModified)
-          ? legacyData
-          : localData;
-      await _uploadAllEntities(baseData);
-      // Try to remove the old file.
-      try {
-        await _dropbox.deleteFile('/todo_data.json');
-      } catch (_) {}
-      return baseData;
-    } catch (e) {
-      debugPrint('Legacy migration error: $e');
-      return localData;
-    }
   }
 
   // ───── Force upload / download ─────
@@ -394,11 +356,10 @@ class SyncService {
       totalRemoteEntities: remoteIndex.entities.length,
     );
     for (var i = 0; i < keys.length; i++) {
-      final content = results[i];
-      if (content != null) {
+      final bytes = results[i];
+      if (bytes != null) {
         try {
-          final json = jsonDecode(content) as Map<String, dynamic>;
-          _applyEntityToData(data, keys[i], json);
+          _applyEntityToData(data, keys[i], bytes);
           _localIndex.entities[keys[i]] = remoteIndex.entities[keys[i]]!;
         } catch (e) {
           debugPrint('Error parsing ${keys[i]}: $e');
@@ -418,27 +379,27 @@ class SyncService {
     final now = DateTime.now();
 
     // Collect all entities to upload.
-    final entries = <(String key, String content)>[];
+    final entries = <(String key, Uint8List bytes)>[];
     for (final t in data.tasks) {
-      entries.add(('tasks/${t.id}', jsonEncode(t.toJson())));
+      entries.add(('tasks/${t.id}', ProtoSerializer.taskToBytes(t)));
     }
     for (final l in data.lists) {
-      entries.add(('lists/${l.id}', jsonEncode(l.toJson())));
+      entries.add(('lists/${l.id}', ProtoSerializer.listToBytes(l)));
     }
     for (final f in data.folders) {
-      entries.add(('folders/${f.id}', jsonEncode(f.toJson())));
+      entries.add(('folders/${f.id}', ProtoSerializer.folderToBytes(f)));
     }
     for (final t in data.tags) {
-      entries.add(('tags/${t.id}', jsonEncode(t.toJson())));
+      entries.add(('tags/${t.id}', ProtoSerializer.tagToBytes(t)));
     }
     for (final s in data.smartLists) {
-      entries.add(('smart_lists/${s.id}', jsonEncode(s.toJson())));
+      entries.add(('smart_lists/${s.id}', ProtoSerializer.smartListToBytes(s)));
     }
 
     await _runParallel(
       entries.map((e) => () async {
-        final (key, content) = e;
-        await _dropbox.uploadFile('/$key.json', content);
+        final (key, bytes) = e;
+        await _dropbox.uploadBinaryFile('/$key.bin', bytes);
         remoteIndex.entities[key] = now;
         _localIndex.entities[key] = now;
       }).toList(),
@@ -453,63 +414,46 @@ class SyncService {
   // ───── Remote index helpers ─────
 
   Future<SyncIndex> _downloadRemoteIndex() async {
-    final content = await _dropbox.downloadFile('/index.json');
-    if (content != null) {
-      return SyncIndex.fromJson(jsonDecode(content) as Map<String, dynamic>);
+    final bytes = await _dropbox.downloadBinaryFile('/index.bin');
+    if (bytes != null) {
+      return ProtoSerializer.syncIndexFromBytes(bytes);
     }
     return SyncIndex();
   }
 
   Future<void> _uploadRemoteIndex(SyncIndex index) async {
-    await _dropbox.uploadFile('/index.json', jsonEncode(index.toJson()));
+    await _dropbox.uploadBinaryFile(
+      '/index.bin',
+      ProtoSerializer.syncIndexToBytes(index),
+    );
   }
 
   // ───── Data manipulation helpers ─────
 
-  void _applyEntityToData(AppData data, String key, Map<String, dynamic> json) {
+  void _applyEntityToData(AppData data, String key, Uint8List bytes) {
     final slash = key.indexOf('/');
     final type = key.substring(0, slash);
     switch (type) {
       case 'tasks':
-        final entity = Task.fromJson(json);
+        final entity = ProtoSerializer.taskFromBytes(bytes);
         final idx = data.tasks.indexWhere((t) => t.id == entity.id);
-        if (idx >= 0) {
-          data.tasks[idx] = entity;
-        } else {
-          data.tasks.add(entity);
-        }
+        if (idx >= 0) { data.tasks[idx] = entity; } else { data.tasks.add(entity); }
       case 'lists':
-        final entity = TaskList.fromJson(json);
+        final entity = ProtoSerializer.listFromBytes(bytes);
         final idx = data.lists.indexWhere((l) => l.id == entity.id);
-        if (idx >= 0) {
-          data.lists[idx] = entity;
-        } else {
-          data.lists.add(entity);
-        }
+        if (idx >= 0) { data.lists[idx] = entity; } else { data.lists.add(entity); }
       case 'folders':
-        final entity = Folder.fromJson(json);
+        final entity = ProtoSerializer.folderFromBytes(bytes);
         final idx = data.folders.indexWhere((f) => f.id == entity.id);
-        if (idx >= 0) {
-          data.folders[idx] = entity;
-        } else {
-          data.folders.add(entity);
-        }
+        if (idx >= 0) { data.folders[idx] = entity; } else { data.folders.add(entity); }
       case 'tags':
-        final entity = Tag.fromJson(json);
+        final entity = ProtoSerializer.tagFromBytes(bytes);
         final idx = data.tags.indexWhere((t) => t.id == entity.id);
-        if (idx >= 0) {
-          data.tags[idx] = entity;
-        } else {
-          data.tags.add(entity);
-        }
+        if (idx >= 0) { data.tags[idx] = entity; } else { data.tags.add(entity); }
       case 'smart_lists':
-        final entity = SmartList.fromJson(json);
+        final entity = ProtoSerializer.smartListFromBytes(bytes);
         final idx = data.smartLists.indexWhere((s) => s.id == entity.id);
-        if (idx >= 0) {
-          data.smartLists[idx] = entity;
-        } else {
-          data.smartLists.add(entity);
-        }
+        if (idx >= 0) { data.smartLists[idx] = entity; } else { data.smartLists.add(entity); }
     }
   }
 
@@ -531,22 +475,27 @@ class SyncService {
     }
   }
 
-  Map<String, dynamic>? _extractEntityFromData(AppData data, String key) {
+  Uint8List? _extractEntityFromData(AppData data, String key) {
     final slash = key.indexOf('/');
     final type = key.substring(0, slash);
     final id = key.substring(slash + 1);
     try {
       switch (type) {
         case 'tasks':
-          return data.tasks.firstWhere((t) => t.id == id).toJson();
+          return ProtoSerializer.taskToBytes(
+              data.tasks.firstWhere((t) => t.id == id));
         case 'lists':
-          return data.lists.firstWhere((l) => l.id == id).toJson();
+          return ProtoSerializer.listToBytes(
+              data.lists.firstWhere((l) => l.id == id));
         case 'folders':
-          return data.folders.firstWhere((f) => f.id == id).toJson();
+          return ProtoSerializer.folderToBytes(
+              data.folders.firstWhere((f) => f.id == id));
         case 'tags':
-          return data.tags.firstWhere((t) => t.id == id).toJson();
+          return ProtoSerializer.tagToBytes(
+              data.tags.firstWhere((t) => t.id == id));
         case 'smart_lists':
-          return data.smartLists.firstWhere((s) => s.id == id).toJson();
+          return ProtoSerializer.smartListToBytes(
+              data.smartLists.firstWhere((s) => s.id == id));
         default:
           return null;
       }
@@ -564,12 +513,10 @@ class SyncService {
     _clearZipCache();
 
     try {
-      final indexContent = await _dropbox.downloadFile('/index.json');
-      if (indexContent == null) return false;
+      final indexBytes = await _dropbox.downloadBinaryFile('/index.bin');
+      if (indexBytes == null) return false;
 
-      final remoteIndex = SyncIndex.fromJson(
-        jsonDecode(indexContent) as Map<String, dynamic>,
-      );
+      final remoteIndex = ProtoSerializer.syncIndexFromBytes(indexBytes);
 
       bool changed = false;
 
@@ -599,11 +546,10 @@ class SyncService {
       );
       for (var i = 0; i < toPull.length; i++) {
         final entry = toPull[i];
-        final content = pullResults[i];
-        if (content != null) {
+        final bytes = pullResults[i];
+        if (bytes != null) {
           try {
-            final json = jsonDecode(content) as Map<String, dynamic>;
-            _applyEntityToData(localData, entry.key, json);
+            _applyEntityToData(localData, entry.key, bytes);
             _localIndex.entities[entry.key] = entry.value;
             changed = true;
           } catch (e) {
@@ -656,7 +602,7 @@ class SyncService {
 
   /// Cached zip contents — populated by [_downloadViaZip] so a single zip
   /// fetch can serve multiple callers during one sync cycle.
-  Map<String, String>? _cachedZipContents;
+  Map<String, Uint8List>? _cachedZipContents;
 
   /// Download files using the best strategy:
   /// - If [totalRemoteEntities] is provided and the download count exceeds
@@ -666,7 +612,7 @@ class SyncService {
   ///
   /// Returns a list of contents in the same order as [keys].
   /// Failed / missing files are represented as `null`.
-  Future<List<String?>> _smartDownload(
+  Future<List<Uint8List?>> _smartDownload(
     List<String> keys, {
     int totalRemoteEntities = 0,
   }) async {
@@ -693,15 +639,15 @@ class SyncService {
   }
 
   /// Download multiple files in parallel with bounded concurrency.
-  Future<List<String?>> _downloadParallel(List<String> keys) async {
+  Future<List<Uint8List?>> _downloadParallel(List<String> keys) async {
     if (keys.isEmpty) return [];
-    final results = List<String?>.filled(keys.length, null);
+    final results = List<Uint8List?>.filled(keys.length, null);
     final pool = _Pool(_maxDownloadConcurrency);
     await Future.wait(
       List.generate(keys.length, (i) async {
         await pool.acquire();
         try {
-          results[i] = await _dropbox.downloadFile('/${keys[i]}.json');
+          results[i] = await _dropbox.downloadBinaryFile('/${keys[i]}.bin');
         } catch (e) {
           debugPrint('Error downloading ${keys[i]}: $e');
         } finally {
@@ -722,13 +668,13 @@ class SyncService {
   ];
 
   /// Download all entity subfolders as zips (in parallel) and extract every
-  /// JSON file into a `Map<entityKey, jsonContent>`.
+  /// `.bin` file into a `Map<entityKey, bytes>`.
   /// Uses [_cachedZipContents] so repeated calls in one sync cycle are free.
-  Future<Map<String, String>?> _getZipContents() async {
+  Future<Map<String, Uint8List>?> _getZipContents() async {
     if (_cachedZipContents != null) return _cachedZipContents;
 
     try {
-      final contents = <String, String>{};
+      final contents = <String, Uint8List>{};
 
       // Download each subfolder zip in parallel.
       final zipResults = await Future.wait(
@@ -741,19 +687,19 @@ class SyncService {
 
         final archive = ZipDecoder().decodeBytes(zipBytes);
         for (final file in archive.files) {
-          if (!file.isFile || !file.name.endsWith('.json')) continue;
+          if (!file.isFile || !file.name.endsWith('.bin')) continue;
 
-          // Zip paths look like:  <folderName>/abc.json
+          // Zip paths look like:  <folderName>/abc.bin
           // Strip the leading folder component added by download_zip.
           var path = file.name;
           final firstSlash = path.indexOf('/');
           if (firstSlash >= 0) {
-            path = path.substring(firstSlash + 1); // e.g. abc.json
+            path = path.substring(firstSlash + 1); // e.g. abc.bin
           }
-          if (path.endsWith('.json')) {
-            final id = path.substring(0, path.length - 5); // e.g. abc
-            final key = '${_entityFolders[fi]}/$id';       // e.g. tasks/abc
-            contents[key] = utf8.decode(file.content as List<int>);
+          if (path.endsWith('.bin')) {
+            final id = path.substring(0, path.length - 4); // e.g. abc
+            final key = '${_entityFolders[fi]}/$id';        // e.g. tasks/abc
+            contents[key] = Uint8List.fromList(file.content as List<int>);
           }
         }
       }

@@ -6,20 +6,6 @@ sealed class RecurrenceRule {
   bool occursOn(DateTime date, DateTime startDate);
 
   String describe();
-
-  Map<String, dynamic> toJson();
-
-  factory RecurrenceRule.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as String;
-    return switch (type) {
-      'daily' => DailyRecurrence(),
-      'everyNDays' => EveryNDaysRecurrence.fromJson(json),
-      'weekly' => WeeklyRecurrence.fromJson(json),
-      'monthly' => MonthlyRecurrence.fromJson(json),
-      'yearly' => YearlyRecurrence.fromJson(json),
-      _ => throw ArgumentError('Unknown recurrence type: $type'),
-    };
-  }
 }
 
 class DailyRecurrence extends RecurrenceRule {
@@ -34,9 +20,6 @@ class DailyRecurrence extends RecurrenceRule {
 
   @override
   String describe() => 'Every day';
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'daily'};
 }
 
 class EveryNDaysRecurrence extends RecurrenceRule {
@@ -54,12 +37,6 @@ class EveryNDaysRecurrence extends RecurrenceRule {
 
   @override
   String describe() => 'Every $interval days';
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'everyNDays', 'interval': interval};
-
-  factory EveryNDaysRecurrence.fromJson(Map<String, dynamic> json) =>
-      EveryNDaysRecurrence(json['interval'] as int);
 }
 
 class WeeklyRecurrence extends RecurrenceRule {
@@ -90,17 +67,6 @@ class WeeklyRecurrence extends RecurrenceRule {
     final sorted = weekdays.toList()..sort();
     return 'Every ${sorted.map((w) => names[w]).join(', ')}';
   }
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'type': 'weekly',
-        'weekdays': weekdays.toList(),
-      };
-
-  factory WeeklyRecurrence.fromJson(Map<String, dynamic> json) =>
-      WeeklyRecurrence(
-        (json['weekdays'] as List).map((e) => e as int).toSet(),
-      );
 }
 
 class MonthlyRecurrence extends RecurrenceRule {
@@ -119,15 +85,6 @@ class MonthlyRecurrence extends RecurrenceRule {
 
   @override
   String describe() => 'Monthly on specific day ($dayOfMonth)';
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'type': 'monthly',
-        'dayOfMonth': dayOfMonth,
-      };
-
-  factory MonthlyRecurrence.fromJson(Map<String, dynamic> json) =>
-      MonthlyRecurrence(json['dayOfMonth'] as int);
 }
 
 class YearlyRecurrence extends RecurrenceRule {
@@ -166,17 +123,4 @@ class YearlyRecurrence extends RecurrenceRule {
     ];
     return 'Yearly on specific date (${monthNames[month]} $dayOfMonth)';
   }
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'type': 'yearly',
-        'month': month,
-        'dayOfMonth': dayOfMonth,
-      };
-
-  factory YearlyRecurrence.fromJson(Map<String, dynamic> json) =>
-      YearlyRecurrence(
-        json['month'] as int,
-        json['dayOfMonth'] as int,
-      );
 }

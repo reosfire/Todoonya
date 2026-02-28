@@ -149,6 +149,61 @@ class DropboxService {
 
   // ───── File operations ─────
 
+  /// Upload raw [bytes] to [remotePath] (e.g. `/tasks/abc.bin`).
+  Future<void> uploadBinaryFile(String remotePath, List<int> bytes) async {
+    await _ensureValidToken();
+
+    final response = await _retryWithBackoff(
+      () => http.post(
+        Uri.parse('https://content.dropboxapi.com/2/files/upload'),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+          'Content-Type': 'application/octet-stream',
+          'Dropbox-API-Arg': jsonEncode({
+            'path': remotePath,
+            'mode': 'overwrite',
+            'autorename': false,
+            'mute': true,
+          }),
+        },
+        body: bytes,
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Dropbox upload failed (${response.statusCode}): '
+        '${response.body}',
+      );
+    }
+  }
+
+  /// Download [remotePath] as raw bytes. Returns `null` when the file does
+  /// not exist (Dropbox 409 / path not found).
+  Future<Uint8List?> downloadBinaryFile(String remotePath) async {
+    await _ensureValidToken();
+
+    final response = await _retryWithBackoff(
+      () => http.post(
+        Uri.parse('https://content.dropboxapi.com/2/files/download'),
+        headers: {
+          'Authorization': 'Bearer $_accessToken',
+          'Dropbox-API-Arg': jsonEncode({'path': remotePath}),
+        },
+      ),
+    );
+
+    if (response.statusCode == 409) return null; // not found
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Dropbox download failed (${response.statusCode}): '
+        '${response.body}',
+      );
+    }
+
+    return response.bodyBytes;
+  }
+
   /// Upload [content] to [remotePath] (e.g. `/tasks/abc.json`).
   Future<void> uploadFile(String remotePath, String content) async {
     await _ensureValidToken();
