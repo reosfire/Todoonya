@@ -138,17 +138,5 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
-
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) => m.createAll(),
-        onUpgrade: (m, from, to) async {
-          // Recreate all tables on upgrade (binary format change).
-          for (final table in allTables) {
-            await m.drop(table);
-          }
-          await m.createAll();
-        },
-      );
+  int get schemaVersion => 1;
 }

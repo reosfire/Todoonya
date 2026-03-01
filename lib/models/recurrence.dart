@@ -4,7 +4,6 @@ sealed class RecurrenceRule {
   /// Check whether a given [date] matches this rule, assuming the task
   /// was first scheduled on [startDate].
   bool occursOn(DateTime date, DateTime startDate);
-
   String describe();
 }
 
@@ -40,32 +39,42 @@ class EveryNDaysRecurrence extends RecurrenceRule {
 }
 
 class WeeklyRecurrence extends RecurrenceRule {
-  /// Weekday numbers (1=Mon … 7=Sun).
-  final Set<int> weekdays;
+  final int weekdayBits;
 
-  const WeeklyRecurrence(this.weekdays);
+  const WeeklyRecurrence(this.weekdayBits);
+
+  factory WeeklyRecurrence.fromDays(Iterable<int> days) {
+    int bits = 0;
+    for (final day in days) {
+      bits |= (1 << day);
+    }
+    return WeeklyRecurrence(bits);
+  }
 
   @override
   bool occursOn(DateTime date, DateTime startDate) {
     final d = DateTime(date.year, date.month, date.day);
     final s = DateTime(startDate.year, startDate.month, startDate.day);
     if (d.isBefore(s)) return false;
-    return weekdays.contains(d.weekday);
+    
+    return (weekdayBits & (1 << d.weekday)) != 0;
   }
 
   @override
   String describe() {
-    const names = {
-      1: 'Mon',
-      2: 'Tue',
-      3: 'Wed',
-      4: 'Thu',
-      5: 'Fri',
-      6: 'Sat',
-      7: 'Sun',
-    };
-    final sorted = weekdays.toList()..sort();
-    return 'Every ${sorted.map((w) => names[w]).join(', ')}';
+    const names = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    final buffer = StringBuffer('Every ');
+    bool first = true;
+    for (int i = 1; i <= 7; i++) {
+      if ((weekdayBits & (1 << i)) == 0) continue;
+      
+      if (!first) buffer.write(', ');
+      buffer.write(names[i]);
+      first = false;
+    }
+    
+    return buffer.toString();
   }
 }
 
@@ -88,10 +97,7 @@ class MonthlyRecurrence extends RecurrenceRule {
 }
 
 class YearlyRecurrence extends RecurrenceRule {
-  /// Month (1-12).
   final int month;
-
-  /// Day of month (1-31).
   final int dayOfMonth;
 
   const YearlyRecurrence(this.month, this.dayOfMonth);

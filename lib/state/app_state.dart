@@ -137,10 +137,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
 
   void _ensureDefaults() {
     if (_data.lists.isEmpty) {
-      _data.lists.add(TaskList(id: _uuid.v4(), name: 'My Tasks'));
+      _data.lists.add(TaskList(id: _uuid.v4(), name: 'Inbox', order: 0));
     }
-    // Remove legacy default smart lists (now replaced by built-in ones).
-    removeLegacySmartLists(_data.smartLists);
   }
 
   Future<void> _save() async {

@@ -571,8 +571,9 @@ class _TaskEditorDialogState extends State<TaskEditorDialog> {
   }
 
   void _showWeekdayPicker() {
-    final selected = <int>{};
+    int selectedBits = 0;
     const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
@@ -584,13 +585,13 @@ class _TaskEditorDialogState extends State<TaskEditorDialog> {
               final day = i + 1;
               return FilterChip(
                 label: Text(names[i]),
-                selected: selected.contains(day),
+                selected: (selectedBits & (1 << day)) != 0,
                 onSelected: (v) {
                   setDialogState(() {
                     if (v) {
-                      selected.add(day);
+                      selectedBits |= (1 << day);
                     } else {
-                      selected.remove(day);
+                      selectedBits &= ~(1 << day);
                     }
                   });
                 },
@@ -604,8 +605,8 @@ class _TaskEditorDialogState extends State<TaskEditorDialog> {
             ),
             FilledButton(
               onPressed: () {
-                if (selected.isNotEmpty) {
-                  setState(() => _recurrence = WeeklyRecurrence(selected));
+                if (selectedBits != 0) {
+                  setState(() => _recurrence = WeeklyRecurrence(selectedBits));
                 }
                 Navigator.pop(ctx);
               },

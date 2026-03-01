@@ -112,10 +112,10 @@ class ProtoEveryNDaysRecurrence extends $pb.GeneratedMessage {
 
 class ProtoWeeklyRecurrence extends $pb.GeneratedMessage {
   factory ProtoWeeklyRecurrence({
-    $core.Iterable<$core.int>? weekdays,
+    $core.int? weekdayBits,
   }) {
     final result = create();
-    if (weekdays != null) result.weekdays.addAll(weekdays);
+    if (weekdayBits != null) result.weekdayBits = weekdayBits;
     return result;
   }
 
@@ -132,7 +132,7 @@ class ProtoWeeklyRecurrence extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ProtoWeeklyRecurrence',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'todo'),
       createEmptyInstance: create)
-    ..p<$core.int>(1, _omitFieldNames ? '' : 'weekdays', $pb.PbFieldType.K3)
+    ..aI(1, _omitFieldNames ? '' : 'weekdayBits', protoName: 'weekdayBits')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -156,7 +156,13 @@ class ProtoWeeklyRecurrence extends $pb.GeneratedMessage {
   static ProtoWeeklyRecurrence? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $pb.PbList<$core.int> get weekdays => $_getList(0);
+  $core.int get weekdayBits => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set weekdayBits($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasWeekdayBits() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearWeekdayBits() => $_clearField(1);
 }
 
 class ProtoMonthlyRecurrence extends $pb.GeneratedMessage {

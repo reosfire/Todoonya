@@ -8,21 +8,13 @@ class TaskSection {
   const TaskSection({this.header, required this.tasks});
 }
 
-// ───── Sealed hierarchy for smart list filter types ─────
-
 sealed class SmartListFilter {
   const SmartListFilter();
 
-  /// Whether this filter provides an input field for creating tasks.
   bool get hasInput;
-
-  /// The scheduled date to assign to newly created tasks (if [hasInput]).
   DateTime? get newTaskScheduledDate => null;
 
-  /// Organize matching tasks into display sections.
   List<TaskSection> organize(List<Task> allTasks);
-
-  /// Count matching pending tasks (for drawer badge).
   int countTasks(List<Task> allTasks);
 }
 
@@ -439,11 +431,3 @@ final builtInSmartLists = [
     filter: const UpcomingFilter(),
   ),
 ];
-
-/// IDs of legacy default smart lists to remove on migration.
-const _legacySmartListIds = {'smart_today', 'smart_upcoming', 'smart_all'};
-
-/// Remove legacy default smart lists from data (they are now built-in).
-void removeLegacySmartLists(List<SmartList> smartLists) {
-  smartLists.removeWhere((sl) => _legacySmartListIds.contains(sl.id));
-}

@@ -11,9 +11,7 @@ class Task {
   Set<String> tagIds;
   String listId;
   
-  /// Doubly-linked list pointers for task ordering within a list.
-  /// The first task in a list has previousTaskId = null.
-  /// The last task in a list has nextTaskId = null.
+  // Intrusive linked list pointers for ordering tasks within a list.
   String? previousTaskId;
   String? nextTaskId;
 

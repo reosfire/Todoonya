@@ -11,7 +11,7 @@ import 'storage_service.dart';
 ///
 /// Dropbox layout:
 /// ```
-/// /index.bin              – SyncIndex (protobuf binary)
+/// /index.bin              – SyncIndex
 /// /tasks/{id}.bin         – individual Task
 /// /lists/{id}.bin         – individual TaskList
 /// /folders/{id}.bin       – individual Folder

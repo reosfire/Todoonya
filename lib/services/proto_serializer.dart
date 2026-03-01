@@ -21,20 +21,14 @@ class ProtoSerializer {
   static DateTime _fromMs(Int64 ms) =>
       DateTime.fromMillisecondsSinceEpoch(ms.toInt());
 
-  /// UUID string → 16 raw bytes.
   static Uint8List _uuidToBytes(String uuid) =>
       Uint8List.fromList(Uuid.parse(uuid));
-
-  /// 16 raw bytes → UUID string.
   static String _uuidFromBytes(List<int> bytes) => Uuid.unparse(bytes);
 
-  /// Optional UUID: null → empty bytes, non-null → 16 bytes.
-  static List<int> _optUuidToBytes(String? uuid) =>
-      uuid == null ? const [] : Uint8List.fromList(Uuid.parse(uuid));
-
-  /// Optional UUID: empty bytes → null, 16 bytes → UUID string.
+  static Uint8List _optUuidToBytes(String? uuid) =>
+      uuid == null ? Uint8List(0) : _uuidToBytes(uuid);
   static String? _optUuidFromBytes(List<int> bytes) =>
-      bytes.isEmpty ? null : Uuid.unparse(bytes);
+      bytes.isEmpty ? null : _uuidFromBytes(bytes);
 
   // ───── RecurrenceRule ─────
 
@@ -46,9 +40,9 @@ class ProtoSerializer {
         ProtoRecurrenceRule(
           everyNDays: ProtoEveryNDaysRecurrence(interval: interval),
         ),
-      WeeklyRecurrence(:final weekdays) =>
+      WeeklyRecurrence(:final weekdayBits) =>
         ProtoRecurrenceRule(
-          weekly: ProtoWeeklyRecurrence(weekdays: weekdays.toList()),
+          weekly: ProtoWeeklyRecurrence(weekdayBits: weekdayBits),
         ),
       MonthlyRecurrence(:final dayOfMonth) =>
         ProtoRecurrenceRule(
@@ -67,7 +61,7 @@ class ProtoSerializer {
       ProtoRecurrenceRule_Rule.everyNDays =>
         EveryNDaysRecurrence(p.everyNDays.interval),
       ProtoRecurrenceRule_Rule.weekly =>
-        WeeklyRecurrence(p.weekly.weekdays.toSet()),
+        WeeklyRecurrence(p.weekly.weekdayBits),
       ProtoRecurrenceRule_Rule.monthly =>
         MonthlyRecurrence(p.monthly.dayOfMonth),
       ProtoRecurrenceRule_Rule.yearly =>
@@ -263,31 +257,5 @@ class ProtoSerializer {
       entities: p.entities.map((k, v) => MapEntry(k, _fromMs(v))),
       deletions: p.deletions.map((k, v) => MapEntry(k, _fromMs(v))),
     );
-  }
-
-  // ───── Per-type entity dispatch ─────
-
-  /// Serialise any entity by its Dropbox type prefix ("tasks", "lists", …).
-  static Uint8List entityToBytes(String type, dynamic entity) {
-    return switch (type) {
-      'tasks' => taskToBytes(entity as Task),
-      'lists' => listToBytes(entity as TaskList),
-      'folders' => folderToBytes(entity as Folder),
-      'tags' => tagToBytes(entity as Tag),
-      'smart_lists' => smartListToBytes(entity as SmartList),
-      _ => throw ArgumentError('Unknown entity type: $type'),
-    };
-  }
-
-  /// Deserialise raw bytes back to a domain object by type prefix.
-  static dynamic entityFromBytes(String type, Uint8List bytes) {
-    return switch (type) {
-      'tasks' => taskFromBytes(bytes),
-      'lists' => listFromBytes(bytes),
-      'folders' => folderFromBytes(bytes),
-      'tags' => tagFromBytes(bytes),
-      'smart_lists' => smartListFromBytes(bytes),
-      _ => throw ArgumentError('Unknown entity type: $type'),
-    };
   }
 }

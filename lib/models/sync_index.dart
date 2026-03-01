@@ -7,7 +7,6 @@ class SyncIndex {
   Map<String, DateTime> entities;
 
   /// Entity key → deletion timestamp.
-  /// Used to propagate deletions across devices.
   Map<String, DateTime> deletions;
 
   SyncIndex({

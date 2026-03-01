@@ -42,14 +42,14 @@ final $typed_data.Uint8List protoEveryNDaysRecurrenceDescriptor =
 const ProtoWeeklyRecurrence$json = {
   '1': 'ProtoWeeklyRecurrence',
   '2': [
-    {'1': 'weekdays', '3': 1, '4': 3, '5': 5, '10': 'weekdays'},
+    {'1': 'weekdayBits', '3': 1, '4': 1, '5': 5, '10': 'weekdayBits'},
   ],
 };
 
 /// Descriptor for `ProtoWeeklyRecurrence`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List protoWeeklyRecurrenceDescriptor =
-    $convert.base64Decode(
-        'ChVQcm90b1dlZWtseVJlY3VycmVuY2USGgoId2Vla2RheXMYASADKAVSCHdlZWtkYXlz');
+final $typed_data.Uint8List protoWeeklyRecurrenceDescriptor = $convert.base64Decode(
+    'ChVQcm90b1dlZWtseVJlY3VycmVuY2USIAoLd2Vla2RheUJpdHMYASABKAVSC3dlZWtkYXlCaX'
+    'Rz');
 
 @$core.Deprecated('Use protoMonthlyRecurrenceDescriptor instead')
 const ProtoMonthlyRecurrence$json = {
