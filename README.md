@@ -1,6 +1,4 @@
-# Todo
-
-A cross-platform todo app built with Flutter and Material 3.
+A todo app written with flutter supporting web and mobile platforms. Supports free cloud sync via dropbox.
 
 ## Features
 
@@ -19,29 +17,19 @@ A cross-platform todo app built with Flutter and Material 3.
 - Flutter SDK 3.9+
 - A Dropbox app key (optional, for sync)
 
+### Compiling protobuf:
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
 ### Run locally
 
 ```bash
 flutter pub get
-flutter run
+flutter run -d web-server --web-port=8080
 ```
 
-### Dropbox sync setup
-
-1. Create a Dropbox app at [dropbox.com/developers/apps](https://www.dropbox.com/developers/apps) → *Scoped access* → *App folder*
-2. Enable `files.content.read` and `files.content.write` permissions
-3. Add redirect URIs: your web URL and `todoapp://auth` for mobile
-4. Put your app key in `lib/services/dropbox_service.dart`
-
-## Building
-
-### Web
-
-```bash
-flutter build web
-```
-
-### Android APK (optimized)
+### Build android APK (optimized)
 
 ```bash
 flutter build apk --release --shrink --obfuscate --split-debug-info=build/debug-info

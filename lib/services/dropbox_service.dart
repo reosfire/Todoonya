@@ -4,27 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
+import 'package:todo/global_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'web_auth.dart' as web_auth;
 
-/// Dropbox OAuth2 + Files API service using PKCE (no client secret needed).
-///
-/// Setup instructions:
-/// 1. Go to https://www.dropbox.com/developers/apps and create a new app.
-/// 2. Choose "Scoped access" → "App folder".
-/// 3. In the Permissions tab enable `files.content.write` and
-///    `files.content.read`, then click Submit.
-/// 4. In the Settings tab:
-///    • Copy the **App key** and paste it into [_appKey] below.
-///    • Add redirect URIs:
-///      – For web development: `http://localhost:8080/` (note the trailing slash)
-///      – For web production: `https://reosfire.github.io/Todo/` (your GitHub Pages URL with repo name)
-///      – For mobile: `todoapp://auth`
-/// 5. Run the app and tap "Connect to Dropbox".
 class DropboxService {
-  // ── Replace with your own Dropbox App key ──
-  static const String _appKey = 'h977trn71rfdiim';
-
   // ── Token storage keys ──
   static const _keyAccessToken = 'dbx_access_token';
   static const _keyRefreshToken = 'dbx_refresh_token';
@@ -64,7 +48,7 @@ class DropboxService {
 
     final redirectUri = _redirectUri;
     final uri = Uri.https('www.dropbox.com', '/oauth2/authorize', {
-      'client_id': _appKey,
+      'client_id': dropboxAppKey,
       'response_type': 'code',
       'code_challenge': challenge,
       'code_challenge_method': 'S256',
@@ -97,10 +81,9 @@ class DropboxService {
 
   static const _maxRetries = 5;
   static const _initialDelayMs = 500;
-  static const _maxDelayMs = 30000; // 30 s cap
+  static const _maxDelayMs = 30000;
   final _rng = Random();
 
-  /// Returns `true` if the HTTP status code is retryable.
   bool _isRetryable(int statusCode) =>
       statusCode == 429 || // rate limit
       statusCode == 500 ||
@@ -111,8 +94,6 @@ class DropboxService {
   /// Executes [request] with up to [_maxRetries] retries using exponential
   /// backoff + jitter.  The first attempt fires immediately.
   ///
-  /// The callback receives no arguments and must return an [http.Response].
-  /// If the response status is retryable the helper waits and tries again.
   /// After exhausting retries it returns the last response as-is.
   Future<http.Response> _retryWithBackoff(
     Future<http.Response> Function() request,
@@ -120,10 +101,8 @@ class DropboxService {
     late http.Response response;
     for (var attempt = 0; attempt <= _maxRetries; attempt++) {
       if (attempt > 0) {
-        // Exponential: 500, 1000, 2000, 4000, 8000 ms … capped at 30 s.
         final baseDelay = (_initialDelayMs * (1 << (attempt - 1)))
             .clamp(0, _maxDelayMs);
-        // Jitter: ±25 % of the base delay.
         final jitter = (baseDelay * 0.25 * (2 * _rng.nextDouble() - 1)).round();
         final delay = (baseDelay + jitter).clamp(0, _maxDelayMs);
         await Future.delayed(Duration(milliseconds: delay));
@@ -149,8 +128,7 @@ class DropboxService {
 
   // ───── File operations ─────
 
-  /// Upload [content] to [remotePath] (e.g. `/tasks/abc.json`).
-  Future<void> uploadFile(String remotePath, String content) async {
+  Future<void> uploadBinaryFile(String remotePath, List<int> bytes) async {
     await _ensureValidToken();
 
     final response = await _retryWithBackoff(
@@ -166,7 +144,7 @@ class DropboxService {
             'mute': true,
           }),
         },
-        body: utf8.encode(content),
+        body: bytes,
       ),
     );
 
@@ -178,9 +156,9 @@ class DropboxService {
     }
   }
 
-  /// Download the file at [remotePath]. Returns `null` when the file does
+  /// Download [remotePath] as raw bytes. Returns `null` when the file does
   /// not exist (Dropbox 409 / path not found).
-  Future<String?> downloadFile(String remotePath) async {
+  Future<Uint8List?> downloadBinaryFile(String remotePath) async {
     await _ensureValidToken();
 
     final response = await _retryWithBackoff(
@@ -193,7 +171,7 @@ class DropboxService {
       ),
     );
 
-    if (response.statusCode == 409) return null; // not found
+    if (response.statusCode == 409) return null;
     if (response.statusCode != 200) {
       throw Exception(
         'Dropbox download failed (${response.statusCode}): '
@@ -201,7 +179,7 @@ class DropboxService {
       );
     }
 
-    return response.body;
+    return response.bodyBytes;
   }
 
   /// Delete the file at [remotePath]. Silently succeeds if the file does
@@ -263,7 +241,7 @@ class DropboxService {
 
   /// Get a cursor for the app folder's current state using
   /// `list_folder/get_latest_cursor`.  The cursor can later be passed to
-  /// [longpollForChanges] or [listFolderContinue].
+  /// [longpollForChanges].
   Future<String?> getLatestCursor() async {
     await _ensureValidToken();
 
@@ -299,9 +277,6 @@ class DropboxService {
   /// Long-poll Dropbox for changes.  Blocks for up to [timeout] seconds
   /// (30-480, default 120).  Returns `true` when remote files have changed,
   /// `false` on timeout, and `null` on error (e.g. cursor reset).
-  ///
-  /// **Important:** This endpoint uses `notify.dropboxapi.com` and does NOT
-  /// require an Authorization header.
   Future<bool?> longpollForChanges(String cursor, {int timeout = 120}) async {
     try {
       final response = await http
@@ -313,7 +288,7 @@ class DropboxService {
             body: jsonEncode({'cursor': cursor, 'timeout': timeout}),
           )
           .timeout(
-            Duration(seconds: timeout + 120), // generous HTTP timeout
+            Duration(seconds: timeout + 120),
           );
 
       if (response.statusCode != 200) {
@@ -351,7 +326,6 @@ class DropboxService {
 
   String get _redirectUri {
     if (kIsWeb) {
-      // On web, use the actual origin (https://reosfire.github.io or http://localhost:8080)
       return web_auth.getAppRedirectUri();
     }
     return 'todoapp://auth';
@@ -364,7 +338,7 @@ class DropboxService {
       body: {
         'code': code,
         'grant_type': 'authorization_code',
-        'client_id': _appKey,
+        'client_id': dropboxAppKey,
         'redirect_uri': _redirectUri,
         'code_verifier': codeVerifier,
       },
@@ -393,7 +367,7 @@ class DropboxService {
       body: {
         'grant_type': 'refresh_token',
         'refresh_token': _refreshToken!,
-        'client_id': _appKey,
+        'client_id': dropboxAppKey,
       },
     );
 

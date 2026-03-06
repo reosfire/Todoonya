@@ -11,9 +11,7 @@ class Task {
   Set<String> tagIds;
   String listId;
   
-  /// Doubly-linked list pointers for task ordering within a list.
-  /// The first task in a list has previousTaskId = null.
-  /// The last task in a list has nextTaskId = null.
+  // Intrusive linked list pointers for ordering tasks within a list.
   String? previousTaskId;
   String? nextTaskId;
 
@@ -59,42 +57,4 @@ class Task {
     }
     return false;
   }
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'notes': notes,
-    'isCompleted': isCompleted,
-    'createdAt': createdAt.toIso8601String(),
-    'scheduledDate': scheduledDate?.toIso8601String(),
-    'recurrence': recurrence?.toJson(),
-    'tagIds': tagIds.toList(),
-    'listId': listId,
-    'previousTaskId': previousTaskId,
-    'nextTaskId': nextTaskId,
-    'completedDates': completedDates.map((d) => d.toIso8601String()).toList(),
-  };
-
-  factory Task.fromJson(Map<String, dynamic> json) => Task(
-    id: json['id'] as String,
-    title: json['title'] as String,
-    notes: json['notes'] as String? ?? '',
-    isCompleted: json['isCompleted'] as bool? ?? false,
-    createdAt: DateTime.parse(json['createdAt'] as String),
-    scheduledDate: json['scheduledDate'] != null
-        ? DateTime.parse(json['scheduledDate'] as String)
-        : null,
-    recurrence: json['recurrence'] != null
-        ? RecurrenceRule.fromJson(json['recurrence'] as Map<String, dynamic>)
-        : null,
-    tagIds: (json['tagIds'] as List?)?.map((e) => e as String).toSet() ?? {},
-    listId: json['listId'] as String,
-    previousTaskId: json['previousTaskId'] as String?,
-    nextTaskId: json['nextTaskId'] as String?,
-    completedDates:
-        (json['completedDates'] as List?)
-            ?.map((e) => DateTime.parse(e as String))
-            .toSet() ??
-        {},
-  );
 }

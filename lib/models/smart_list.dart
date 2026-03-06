@@ -8,69 +8,14 @@ class TaskSection {
   const TaskSection({this.header, required this.tasks});
 }
 
-// ───── Sealed hierarchy for smart list filter types ─────
-
 sealed class SmartListFilter {
   const SmartListFilter();
 
-  /// Whether this filter provides an input field for creating tasks.
   bool get hasInput;
-
-  /// The scheduled date to assign to newly created tasks (if [hasInput]).
   DateTime? get newTaskScheduledDate => null;
 
-  /// Organize matching tasks into display sections.
   List<TaskSection> organize(List<Task> allTasks);
-
-  /// Count matching pending tasks (for drawer badge).
   int countTasks(List<Task> allTasks);
-
-  Map<String, dynamic> toJson();
-
-  static SmartListFilter fromJson(Map<String, dynamic> json) {
-    final rawType = json['type'];
-    // Handle legacy integer type index and new string type.
-    final typeStr =
-        rawType is int ? _legacyTypeMap(rawType) : rawType as String;
-
-    return switch (typeStr) {
-      'today' => const TodayFilter(),
-      'tomorrow' => const TomorrowFilter(),
-      'upcoming' => const UpcomingFilter(),
-      'overdue' => const OverdueFilter(),
-      'dateRange' => DateRangeFilter(
-          dateFrom: json['dateFrom'] != null
-              ? DateTime.parse(json['dateFrom'] as String)
-              : null,
-          dateTo: json['dateTo'] != null
-              ? DateTime.parse(json['dateTo'] as String)
-              : null,
-        ),
-      'tags' => TagsFilter(
-          tagIds: (json['tagIds'] as List?)
-                  ?.map((e) => e as String)
-                  .toSet() ??
-              {},
-        ),
-      'completed' => const CompletedFilter(),
-      'all' => const AllTasksFilter(),
-      _ => const AllTasksFilter(),
-    };
-  }
-
-  /// Map legacy enum index to string type name.
-  static String _legacyTypeMap(int index) {
-    const map = [
-      'today',
-      'upcoming',
-      'overdue',
-      'dateRange',
-      'tags',
-      'completed',
-      'all',
-    ];
-    return index < map.length ? map[index] : 'all';
-  }
 }
 
 // ───── Built-in filter types ─────
@@ -124,9 +69,6 @@ class TodayFilter extends SmartListFilter {
                 : !t.isCompleted))
         .length;
   }
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'today'};
 }
 
 class TomorrowFilter extends SmartListFilter {
@@ -183,9 +125,6 @@ class TomorrowFilter extends SmartListFilter {
                 : !t.isCompleted))
         .length;
   }
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'tomorrow'};
 }
 
 class UpcomingFilter extends SmartListFilter {
@@ -288,9 +227,6 @@ class UpcomingFilter extends SmartListFilter {
         .where((t) => !t.isCompleted && t.scheduledDate != null)
         .length;
   }
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'upcoming'};
 }
 
 // ───── User-created filter types ─────
@@ -324,9 +260,6 @@ class OverdueFilter extends SmartListFilter {
   @override
   int countTasks(List<Task> allTasks) =>
       organize(allTasks).fold(0, (s, sec) => s + sec.tasks.length);
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'overdue'};
 }
 
 class DateRangeFilter extends SmartListFilter {
@@ -364,13 +297,6 @@ class DateRangeFilter extends SmartListFilter {
   @override
   int countTasks(List<Task> allTasks) =>
       organize(allTasks).fold(0, (s, sec) => s + sec.tasks.length);
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'type': 'dateRange',
-        'dateFrom': dateFrom?.toIso8601String(),
-        'dateTo': dateTo?.toIso8601String(),
-      };
 }
 
 class TagsFilter extends SmartListFilter {
@@ -405,12 +331,6 @@ class TagsFilter extends SmartListFilter {
             (t) => !t.isCompleted && t.tagIds.any((id) => tagIds.contains(id)))
         .length;
   }
-
-  @override
-  Map<String, dynamic> toJson() => {
-        'type': 'tags',
-        'tagIds': tagIds.toList(),
-      };
 }
 
 class CompletedFilter extends SmartListFilter {
@@ -429,9 +349,6 @@ class CompletedFilter extends SmartListFilter {
   @override
   int countTasks(List<Task> allTasks) =>
       allTasks.where((t) => t.isCompleted).length;
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'completed'};
 }
 
 class AllTasksFilter extends SmartListFilter {
@@ -457,9 +374,6 @@ class AllTasksFilter extends SmartListFilter {
   @override
   int countTasks(List<Task> allTasks) =>
       allTasks.where((t) => !t.isCompleted).length;
-
-  @override
-  Map<String, dynamic> toJson() => {'type': 'all'};
 }
 
 // ───── Helper ─────
@@ -490,23 +404,6 @@ class SmartList {
 
   IconData get icon => IconData(iconCodePoint, fontFamily: 'MaterialIcons');
   Color get color => Color(colorValue);
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'iconCodePoint': iconCodePoint,
-        'colorValue': colorValue,
-        'filter': filter.toJson(),
-      };
-
-  factory SmartList.fromJson(Map<String, dynamic> json) => SmartList(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        iconCodePoint: json['iconCodePoint'] as int? ?? 0xe0c8,
-        colorValue: json['colorValue'] as int? ?? 0xFFAB47BC,
-        filter:
-            SmartListFilter.fromJson(json['filter'] as Map<String, dynamic>),
-      );
 }
 
 // ───── Hardcoded built-in smart lists ─────
@@ -534,11 +431,3 @@ final builtInSmartLists = [
     filter: const UpcomingFilter(),
   ),
 ];
-
-/// IDs of legacy default smart lists to remove on migration.
-const _legacySmartListIds = {'smart_today', 'smart_upcoming', 'smart_all'};
-
-/// Remove legacy default smart lists from data (they are now built-in).
-void removeLegacySmartLists(List<SmartList> smartLists) {
-  smartLists.removeWhere((sl) => _legacySmartListIds.contains(sl.id));
-}
