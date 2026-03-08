@@ -1,4 +1,4 @@
-package ru.reosfire.todoonya
+package ru.reosfire.todopen
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -127,14 +127,14 @@ class AppDatabase extends _$AppDatabase {
   static QueryExecutor _openConnection() {
     if (kIsWeb) {
       return driftDatabase(
-        name: 'todoonya_app',
+        name: 'todopen_app',
         web: DriftWebOptions(
           sqlite3Wasm: Uri.parse('sqlite3.wasm'),
           driftWorker: Uri.parse('drift_worker.js'),
         ),
       );
     }
-    return driftDatabase(name: 'todoonya_app');
+    return driftDatabase(name: 'todopen_app');
   }
 
   @override

@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _getAppBarTitle(AppState state) {
-    String defaultTitle = 'Todoonya';
+    String defaultTitle = 'todopen';
     if (_selectedSmartListId != null) {
       return state.smartListById(_selectedSmartListId!)?.name ?? defaultTitle;
     }

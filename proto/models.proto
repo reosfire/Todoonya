@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package todoonya;
+package todopen;
 
 // ───── Recurrence ─────
 
